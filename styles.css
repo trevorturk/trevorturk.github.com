@@ -4,108 +4,102 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 @import url(https://fonts.googleapis.com/css?family=Lato:300italic,700italic,300,700);
 
 body {
-  padding:50px;
-  font:14px/1.5 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color:#777;
-  font-weight:300;
+  padding: 50px;
+  font: 14px/1.5 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #777;
+  font-weight: 300;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  color:#222;
-  margin:0 0 20px;
+  margin:0 0 20px 0;
 }
 
 p, ul, ol, table, pre, dl {
-  margin:0 0 20px;
+  margin: 0 0 20px 0;
 }
 
 h1, h2, h3 {
-  line-height:1.1;
+  line-height: 1.1;
 }
 
 h1 {
-  font-size:28px;
+  font-size: 28px;
 }
 
 h2 {
   font-size: 18px;
-  color:#393939;
-}
-
-h3, h4, h5, h6 {
-  color:#494949;
 }
 
 a {
-  color:#39c;
-  font-weight:400;
-  text-decoration:none;
+  color: #06c;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+h1 a, h2 a {
+  color: #333;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 
 .wrapper {
-  width:860px;
-  margin:0 auto;
+  width: 860px;
+  margin: 0 auto;
 }
 
 blockquote {
-  border-left:1px solid #e5e5e5;
-  margin:0;
-  padding:0 0 0 20px;
-  font-style:italic;
+  border-left: 1px solid #e5e5e5;
+  margin: 0;
+  padding: 0 0 0 20px;
+  font-style: italic;
 }
 
 code, pre {
-  font-family:Monaco, Bitstream Vera Sans Mono, Lucida Console, Terminal;
-  color:#333;
-  font-size:12px;
+  font-family: Monaco, Bitstream Vera Sans Mono, Lucida Console, Terminal;
+  color: #333;
+  font-size: 12px;
 }
 
 pre {
-  padding:8px 15px;
+  padding: 8px 15px;
   background: #f8f8f8;
-  border-radius:5px;
-  border:1px solid #e5e5e5;
+  border-radius: 5px;
+  border: 1px solid #e5e5e5;
   overflow-x: auto;
 }
 
 table {
-  width:100%;
-  border-collapse:collapse;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 th, td {
-  text-align:left;
-  padding:5px 10px;
-  border-bottom:1px solid #e5e5e5;
+  text-align: left;
+  padding: 5px 10px;
+  border-bottom: 1px solid #e5e5e5;
 }
 
 dt {
-  color:#444;
-  font-weight:700;
+  color: #444;
+  font-weight: 700;
 }
 
 th {
-  color:#444;
+  color: #444;
 }
 
-img, .gist {
-  max-width:100%;
+p, pre, img, .gist {
+  max-width: 100%;
   display: block;
   margin: 1em 0;
 }
 
 header {
-  width:270px;
-  float:left;
-  position:fixed;
-}
-
-header h1 a {
-  color:#222;
-}
-
-header h1 a:hover {
-  text-decoration: underline;
+  width: 270px;
+  float: left;
+  position: fixed;
 }
 
 header img {
@@ -120,9 +114,9 @@ section {
 }
 
 hr {
-  border:0;
-  background:#e5e5e5;
-  height:1px;
-  margin:0 0 20px;
+  border: 0;
+  background: #e5e5e5;
+  height: 1px;
+  margin: 40px 0;
 }
 
