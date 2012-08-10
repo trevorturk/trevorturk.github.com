@@ -1,0 +1,41 @@
+---
+layout: post
+title: ! 'Troubleshooting guide: OpenVPN fails to start'
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+This is a guest post from <a href="http://demongin.org/">Timothy O'Connell</a>.
+
+I work mostly on Debian systems (workstations and servers). Recently, during a lull, I decided to throw caution to the wind and go ahead with a reasonably large (<= 1000MB worth of new and upgrade packages) dist upgrade on my personal workstation at the office. Everything went pretty well (as well as could be expected, anyway) and my post-upgrade reboot was mostly uneventful. 
+
+<a href="http://openvpn.net/" target=top>OpenVPN</a>, however, did <em>not</em> start. And, not to besmirch the character of its developers or its package maintainers ("it's not you; it's me"), I wasn't exactly surprised. OpenVPN is definitely on my "usual suspects" list. And if you run Debian testing or sid, it should be on yours as well.
+ 
+And if it's going to be on your "usual suspects" list and be one of the first apps that you expect to fail, you ought to have a trouble-shooting routine. Or at least an idea of where to start. 
+ 
+Generally speaking, when my OpenVPN fails to initialize and connect during boot, I see the following when I tail <em>/var/log/openvpn.log</em>:<pre>Mon Jan 12 11:33:31 2009 Note: Cannot open TUN/TAP dev /dev/net/tun: No such file or directory (errno=2)
+Mon Jan 12 11:33:31 2009 Note: Attempting fallback to kernel 2.2 TUN/TAP interface
+Mon Jan 12 11:33:31 2009 Cannot allocate TUN/TAP dev dynamically
+Mon Jan 12 11:33:31 2009 Exiting
+</pre>And, honestly, this is the error you're most likely to receive following an kernel upgrade: something will go "kablooie" as the various new modules are initialized, your dev node won't be created and you'll end up <em>without</em> support for the virtual device that will allow you to create your tunnels. 
+
+First things first, stop and start OpenVPN with its init script and tail the logs, just to eliminate the possibility that cosmic rays struck your machine during boot and the failure was a fluke:<pre>gonzo:/etc/openvpn# /etc/init.d/openvpn stop
+Stopping virtual private network daemon:/etc/init.d/openvpn: line 68: kill: (3047) - No such process
+ client.
+gonzo:/etc/openvpn# /etc/init.d/openvpn start
+Starting virtual private network daemon: client.
+</pre>If you wind up with the same failure message, it's time to look for modules.Do one of these:<pre># lsmod |grep tun</pre>If you don't see something like the following, odds are good that your module just plain didn't get initialized: <pre>tun                     8292  1</pre> You'll want to double-check that, of course, by grepping your dmesg. If you don't see something like the following in your dmesg boot log, then it's probably time to take the action recommended below: <pre>gonzo:/etc/openvpn# dmesg |grep tun
+[   19.292084] hda: host max PIO4 wanted PIO255(auto-tune) selected PIO4
+[   19.292466] hdb: host max PIO4 wanted PIO255(auto-tune) selected PIO4
+[   20.700088] hdc: host max PIO4 wanted PIO255(auto-tune) selected PIO4
+[  492.481978] tun: Universal TUN/TAP device driver, 1.6
+[  492.481989] tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com></pre>If this is the case, you might considering adding the string "tun" to your <em>/etc/modules</em> file and trying a manual initialization of the module:<pre># modprobe tun</pre>
+If, however, module initialization isn't your problem, you might be experiencing some shenanigans with the population of your <em>/dev</em> directory. If the "tun" module appears to have been initialized successfully, go ahead and <em>ls -l</em> for the node:<pre># ls -l /dev/net/tun</pre>
+If this comes back "No such file or directory" your best bet for a quick fix is (assuming that <em>/dev/net</em> already exists) to handle the situation cowboy style and make the dev node yourself:<pre># mknod /dev/net/tun c 10 200</pre>That should get you a node that looks like this:<pre>crw-r--r-- 1 root root 10, 200 2009-01-12 11:37 /dev/net/tun</pre>
+And once you've got that, issue a quick stop and start of OpenVPN via init script and tail that <em>/var/log/openvpn.log</em> file one more time; you should be past the tunnel creation process.
+ 
+...and on to the next catastrophic failure.

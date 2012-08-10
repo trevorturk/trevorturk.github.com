@@ -1,0 +1,27 @@
+---
+layout: post
+title: Using JavaScript/jQuery to update the browser window title bar
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+  _wp_old_slug: ''
+---
+So, I have this little chat app that's using the wonderful <a href="http://pusherapp.com/">Pusher</a> to support Websockets with a fall-back to Flash. If you're interested in Websockets, I definitely recommend taking a look at Pusher.
+
+Using Pusher to show new messages etc was the easy part. The tricky thing (for me, at least) was figuring out how to update the browser tab's title. I wanted to show an unread messages count if the chat window was inactive. For example:
+
+<img src="http://trevorturk.s3.amazonaws.com/na-pusher-chat-0.png" />
+...versus:
+<img src="http://trevorturk.s3.amazonaws.com/na-pusher-chat-1.png" />
+
+When the chat window is made active again, the unread messages count should be gone. 
+
+Sounds easy, right? Well, it was, for the most part. The only catch was that I had to use setTimeout() to get things working reliably across browsers. I'm not sure why. 
+
+Anyway, here's the relevant code:
+
+<script src="https://gist.github.com/806218.js?file=gistfile1.js"></script>

@@ -1,0 +1,19 @@
+---
+layout: post
+title: Using delayed_job with Mongoid
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+  _wp_old_slug: ''
+---
+You can opt to use the <a href="http://github.com/collectiveidea/delayed_job_mongoid">Mongoid backend</a>, but I'm just talking about using the latest version of <a href="http://github.com/collectiveidea/delayed_job">delayed_job</a> in a Rails 3 app that also happens to use Monogid. I was having some "connection closed" problems that made it look like the Mongo connection was being dropped. 
+
+Putting this into an initializer seems to solve the issue: 
+
+<script src="http://gist.github.com/639512.js?file=gistfile1.txt"></script>
+
+Thanks for figuring that out, <a href="http://www.themomorohoax.com/">Mischa</a> ;)

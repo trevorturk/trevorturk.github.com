@@ -1,0 +1,28 @@
+---
+layout: post
+title: anki - Ancient Latin Deck
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+This is a guest post from <a href="http://demongin.org/">Timothy O'Connell</a>.
+
+A <a href="http://lifehacker.com/5129286/anki-teaches-text-audio-or-images-through-repetition" target=top>recent LifeHacker article</a> got me interested in <em>anki</em>, a cross-platform Simple Repetition System (SRS) or flash-card app.
+
+<em>anki</em> allows users to create or import modular "decks" of "cards" that they can use to study whatever it is that they want to study. Which is, in and of itself, pretty great: as soon as I learned about this, I got excited. My enthusiasm went on the wane, however, when I discovered that there was no deck for ancient Latin (the casual study of which has long been a hobby of mine). 
+
+So I decided to create one by scraping the Latin dictionary at <a href="http://www.classicsunveiled.com/" target=top>http://classicsunveiled.com/</a>. The details of the scrape and the import of the entries into a Postgres database are relatively uninteresting: there are also hundreds of good tutorial on BeautifulSoup and psycopg2 out there and the world obviously has no use for another one from a self-proclaimed n00b like me.
+
+What the world might find useful, however, is the ancient Latin deck I created. Here's a step-by-step* on how to get it going:
+<ol><li>Download the .txt file from my personal blog: <a href="http://demongin.orghttp://s3.amazonaws.com/almosteffortless/ankiLatin.txt">http://demongin.orghttp://s3.amazonaws.com/almosteffortless/ankiLatin.txt</a></li>
+<li>Start anki.</li>
+<li>Click "File" -> "Import"</li>
+<li>Click "Choose file..." and browse for ankiLatin.txt.</il>
+<li>Once you've selected the file, everything should be ready to go: click "Import" (to the right of the "Field mapping" controls), give the program a second to import the deck, select close and get busy.</li></ol>
+
+
+* <strong>NB:</strong> these instructions are based on the Debian package version of <em>anki</em> (i.e. 0.9.9.4).

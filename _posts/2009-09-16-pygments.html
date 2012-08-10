@@ -1,0 +1,26 @@
+---
+layout: post
+title: Pygments
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+I'm pleased to announce the immediate availability of <a href="http://pygments.appspot.com">http://pygments.appspot.com</a>. It's an unofficial API for the <a href="http://pygments.org/">Pygments</a> syntax highlighting library. It's designed to provide syntax highlighting for web applications that don't have Python installed. You can think of it as an HTTP interface for Pygments. 
+
+To use it, simply POST to http://pygments.appspot.com with "lang" and "code" parameters in the body. You'll receive pygmentized HTML back, which you can store for later display on your site.
+
+<script src="http://gist.github.com/188359.js"></script>
+
+I'm using it so that I can host <a href="http://flowcoder.com">Flowcoder</a> on <a href="http://heroku.com">Heroku</a>. I was really impressed with the ease of getting this Pygments app running on <a href="http://appengine.google.com/">Google App Engine</a>. GAE is very much like a Python version of Heroku, which means it's awesome.
+
+ I'm hoping that this little project will spike my interest in learning a bit more about Python, which actually doesn't seem as evil as all my Ruby friends have made it out to be :P
+
+The <a href="http://github.com/trevorturk/pygments">source code is on github</a>, in case you're curious about how this all works. 
+
+Enjoy!
+
+<a href="http://pygments.appspot.com">http://pygments.appspot.com</a>

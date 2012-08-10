@@ -1,0 +1,33 @@
+---
+layout: post
+title: ! 'New WordPress theme: Simplest'
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+  _wp_old_slug: ''
+---
+When I came back to using WordPress recently, I was disappointed by the overwhelming complexity of the themes in the Theme Directory. I wanted to build something for my own site, but I was having trouble finding a reasonable base that I could build upon.
+
+What's the bare minimum necessary to make a fully functioning theme for WordPress 3.0.1? The answer wasn't clear.
+
+So, I set out to make the simplest possible theme for WordPress that would be approved for the Theme Directory. After a few revisions with the helpful guidance of the theme reviewers, it's available now:
+
+<a href="http://wordpress.org/extend/themes/simplest"><img src="http://wp-themes.com/wp-content/themes/simplest/screenshot.png" style="border:1px solid #ddd;"></a>
+
+<a href="http://wordpress.org/extend/themes/simplest">http://wordpress.org/extend/themes/simplest</a>
+
+The theme is good enough to use as-is, in my opinion, but it's first and foremost an example of the simplest possible theme that you can make for WordPress version 3.0.1. This makes is a a great candidate for do-it-yourself folks like me who want to make their own themes, but would like some basic level of support to build upon.
+
+Here's the code in case you're curious:
+
+<script src="http://gist.github.com/588028.js"> </script>
+
+It's 83 lines of PHP and 75 lines of CSS in 4 files.
+
+That's an extraordinarily small amount of code for a fully functional WordPress 3.0.1 theme. To put it into perspective, the current default theme "<a href="http://wordpress.org/extend/themes/twentyten">TwentyTen</a>" clocks in at 1551 lines of PHP and 1951 lines of CSS in 24 files. Of course, they're not making an effort to be succinct, but with a functions.php file that's 483 lines of code alone, I find it to be rather confusing to navigate.
+
+So, I put something together that is truly minimal. Not only minimal in design, but has a minimal amount of clear, readable, understandable code. I hope you find it useful!

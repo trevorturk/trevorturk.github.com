@@ -1,0 +1,63 @@
+---
+layout: post
+title: Sharing Code Between ActiveRecord Models
+tags:
+- General
+status: publish
+type: post
+published: true
+meta: {}
+---
+I was frustrated with the amount of duplicated code sprinkled in my models that are using the <a href="http://almosteffortless.com/2007/03/25/working-with-attachment_fu/">attachment_fu</a> plugin to deal with file uploads. It's not like I need to write a plugin or anything fancy - I just want to be a little more <a href="http://en.wikipedia.org/wiki/Don't_repeat_yourself">DRY</a>. 
+
+So, how does one simply share code between <a href="http://api.rubyonrails.org/classes/ActiveRecord/Base.html">ActiveRecord</a> models? It's actually quite easy.
+
+First, drop some code into a module in a .rb file in your lib directory. For example:
+
+<pre lang="ruby">
+# lib/attachment_fu_extensions.rb
+
+module AttachmentFuExtensions
+  
+  # include some standard attachment_fu stuff
+  def self.included(klass)
+    klass.send :validates_as_attachment
+    klass.send :validates_uniqueness_of, :filename
+    klass.send :validates_presence_of, :user_id
+    klass.send :attr_protected, :id, :parent_id, :user_id, :created_at, :updated_at
+  end
+
+  # upload into a single directory (e.g. public/uploads) instead of subdirectories based on the id
+  def full_filename(thumbnail = nil)
+    file_system_path = (thumbnail ? thumbnail_class : self).attachment_options[:path_prefix].to_s
+    File.join(RAILS_ROOT, file_system_path, thumbnail_name_for(thumbnail))
+  end
+
+  # prevent users from uploading index files that would be served instead of the index template/action
+  def validate
+    errors.add("filename", "is invalid") if filename? && %w(index.html index.htm).include?(filename.downcase)
+  end
+
+end
+</pre>
+
+That code will automatically be loaded when your application starts, provided that the filename and module follow the standard Rails <a href="http://giantrobots.thoughtbot.com/2007/8/8/auto-load">naming conventions</a>. 
+
+Then, simply include the relevant module in the relevant models. For example:
+
+<pre lang="ruby">
+# app/models/upload.rb
+
+class Upload < ActiveRecord::Base
+    
+  has_attachment :storage => :file_system, :path_prefix => 'public/uploads', :max_size => 10.megabytes
+  include AttachmentFuExtensions
+
+  # ...
+
+end
+</pre>
+
+That's it. Extending ActiveRecord models and DRYing out your app is pretty easy, eh? 
+
+<b>Update:</b> <a href="http://kete.net.nz/">Walter</a> pointed out that I should put modules like this into lib/ instead of config/initializers/, so I've updated this post to reflect that. I'm not sure why that didn't occur to me. He also told me about the trick for sharing calls to validates_as_attachment and so forth - I didn't even know that was possible!

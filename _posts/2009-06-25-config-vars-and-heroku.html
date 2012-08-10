@@ -1,0 +1,103 @@
+---
+layout: post
+title: Config vars and Heroku
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+I don't really care for the <a href="http://docs.heroku.com/config-vars#local-setup ">suggested approach</a> in the <a href="http://heroku.com">Heroku</a> docs for setting configuration variables locally. I have an open-source project that I'm working to get onto Heroku, so I decided to do a little work to come up with a solution that I prefer. I think this would work well for open source projects, as well as projects with multiple developers. 
+
+Here's the basic idea: 
+
+You have a config file that contains all of your local configuration variables. It looks a lot like database.yml.
+
+<pre lang="ruby">
+# config/config.yml
+
+development:
+  session_key: example_development
+  session_secret: ESl6X3oKM1i1RRrD2QLwUUzz9jr1zxNO
+  domain: http://example.com
+ 
+test:
+  session_key: example_test
+  session_secret: vrwPpJTvwnMVLP1wTSgqigSl7PMI7QcE
+  domain: http://example.com
+  
+production:
+  session_key: # any string identifying your app
+  session_secret: # a random, secret string at least 32 characters long
+  domain: # http://example.com
+  mailer: # noreply@example.com
+</pre>
+
+You perform a little trickery in environment.rb to prefer the Heroku ENV storage of config vars (in the production environment), but you fall back to your config.yml if the config vars aren't found in ENV (in the development and test environments). 
+
+<pre lang="ruby">
+# config/environment.rb
+ 
+Rails::Initializer.run do |config|  
+  require 'yaml'
+  
+  # support yaml and heroku config vars, preferring ENV for heroku
+  CONFIG = (YAML.load_file('config/config.yml')[RAILS_ENV] rescue {}).merge(ENV)
+  
+  config.action_controller.session = {
+    :key => CONFIG['session_key'],
+    :secret => CONFIG['session_secret']
+  }
+end
+</pre>
+
+Then, you create a rake task (<i>rake heroku:config</i>) that can be used to send all of the config vars for your production environment up to Heroku. This task can be invoked once to set things up, but can also be run again if you need to make any additions or changes. 
+
+<pre lang="ruby">
+# lib/tasks/heroku.rake
+
+namespace :heroku do
+  task :config do
+    puts "Reading config/config.yml and sending config vars to Heroku..."
+    CONFIG = YAML.load_file('config/config.yml')['production'] rescue {}
+    command = "heroku config:add"
+    CONFIG.each {|key, val| command << " #{key}=#{val} " if val }
+    system command  
+  end
+end
+</pre>
+
+This way, you've got all of your config vars stored with the project (.gitignored, of course)...
+
+<pre lang="bash">
+# .gitignore
+
+/tmp/**/*
+/log/*
+*.log
+/tmp/restart.txt
+/config/config.yml
+/config/database.yml
+/db/*.sqlite3
+</pre>
+
+...and you can easily set what you need on Heroku, like so:
+
+<pre lang="bash">
+$ rake heroku:config
+Reading config/config.yml and sending config vars to Heroku...
+Adding config vars:
+  session_key => example_production
+  session_secret => 1WlkMkYYi5611vtF...0ZMS2G3Xl67s4lEIK4sj65
+  domain => http://example.com
+  mailer => noreply@example.com
+Restarting app...done.
+</pre>
+
+The result is a pretty nice, I think. 
+
+You can see the installation and deployment instructions for my open source project <a href="http://github.com/trevorturk/eldorado/tree/master">El Dorado</a> if you're curious about the overall flow. 
+
+I'd love to get some feedback on this approach, but I really like it so far :) 

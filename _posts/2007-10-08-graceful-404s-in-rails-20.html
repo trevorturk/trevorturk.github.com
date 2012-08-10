@@ -1,0 +1,57 @@
+---
+layout: post
+title: Graceful 404s in Rails 2.0
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+With the upcoming <a href="http://weblog.rubyonrails.org/2007/9/30/rails-2-0-0-preview-release">Rails 2.0: Preview Release</a> starting to get some attention, I thought I'd take a moment to play with some of the new features. One of my favorite additions is the new exception handling stuff. It works just like a before_filter, so you'll pick it up straight away.
+
+<blockquote><b>Action Pack: Exception handling:</b>
+
+Lots of common exceptions would do better to be rescued at a shared level rather than per action. This has always been possible by overwriting rescue_action_in_public, but then you had to roll out your own case statement and call super. Bah. So now we have a class level macro called rescue_from, which you can use to declaratively point certain exceptions to a given action.</blockquote>
+
+The following is quick example you can use to catch 404 Record Not Found errors. It will catch all 404s on your site and display a nice message, instead of an ugly white page of death:
+
+<p><img src="http://s3.amazonaws.com/almosteffortless/file-not-found-1.jpeg" alt="file-not-found-1.jpeg" /></p>
+
+Simply dip into the ApplicationController and add the following code:
+
+<pre lang="ruby">class ApplicationController < ActionController::Base
+
+  rescue_from ActiveRecord::RecordNotFound, :with => :record_not_found
+
+  # ...
+
+  def record_not_found
+    flash[:notice] = "Sorry, the page you requested was not found."
+    redirect_to root_path
+  end
+
+  # ...
+
+end</pre>
+
+...to display a nice message within your app:
+
+<p><img src="http://s3.amazonaws.com/almosteffortless/file-not-found-2.jpeg" alt="file-not-found-2.jpeg" /></p>
+
+...and there you have it: Easy as Pie(tm) Record Not Found exception handling.
+
+<i>P.S.</i>
+
+This also takes advantage of my favorite <i>tiny</i> addition to Rails, <a href="http://dev.rubyonrails.org/changeset/5671">map.root</a>. I didn't see this mentioned in the release announcement, but it's covered in the video of the <a href="http://railsconfeurope.railsonwave.com/video">Railsconf Europe '07</a> video. 
+
+Instead of this:
+
+<pre lang="ruby">map.home '', :controller => 'home'</pre>
+
+...you can now do this:
+
+<pre lang="ruby">map.root :controller => 'home'</pre>
+
+It's not a big change, but it's just... <i>nice</i>, isn't it?

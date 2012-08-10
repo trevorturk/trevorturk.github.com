@@ -1,0 +1,36 @@
+---
+layout: post
+title: Randomize Filename in Paperclip
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+  _oembed_c5fa6ce09080f5bd6f61ce93edd9f2c9: ! '{{unknown}}'
+---
+Here's a quick tip that Jonathan Yurek, author of <a href="http://thoughtbot.com/projects/paperclip">Paperclip</a>, was kind enough to <a href="http://groups.google.com/group/paperclip-plugin/browse_thread/thread/c45922d0dc2fee83/984c3087c4b12c63#984c3087c4b12c63">help me with</a>. It's a simple way to have a randomized filename for uploaded content. This is useful for security through obscurity, especially when used with Paperclip's <i>id_partition</i> interpolation helper:
+
+<pre lang="ruby">
+class Photo < Asset
+   
+  has_attached_file :image, :path => ":class/:attachment/:id_partition/:basename_:style.:extension"
+
+  before_create :randomize_file_name
+
+private
+
+  def randomize_file_name
+    extension = File.extname(image_file_name).downcase
+    self.image.instance_write(:file_name, "#{ActiveSupport::SecureRandom.hex(16)}#{extension}")
+  end
+
+end
+</pre>
+
+That would, for example, change an uploaded image named "DS_100.JPG" into:
+
+http://example.com/photos/images/000/001/204/e15f64f5e7gjdo3e4ae58f4ed9j925f5.jpg
+
+That makes it effectively impossible to guess the location of an image, provided that you don't allow people to browse around the directories on your server. This is the same method of privacy protection that Flickr uses, and it ought to be enough for most non-governmental privacy needs :)

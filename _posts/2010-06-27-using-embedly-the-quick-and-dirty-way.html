@@ -1,0 +1,23 @@
+---
+layout: post
+title: Using Embedly the Quick and Dirty Way
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+  _wp_old_slug: ''
+---
+The <a href="http://api.embed.ly/">Embedly</a> API allows developers to embed videos, images and rich media from 102 (and counting) services through one API. To me, it's essentially a one-stop shop for getting <a href="http://oembed.com/">oEmbed</a> responses from just about every service that supports embedding rich media. 
+
+I know there are <a href="http://github.com/search?type=Repositories&language=ruby&q=oembed&repo=&langOverride=&x=24&y=24&start_value=1">a few open source Ruby libraries</a> that help you accomplish this kind of thing, but I've found that using Embedly in a quick and dirty fashion is really quite easy. Here's an example that I'm using to embed videos on a new site I'm working on:
+
+<script src="http://gist.github.com/454990.js?file=gistfile1.builder"></script>
+
+<script src="http://gist.github.com/454990.js?file=gistfile2.builder"></script>
+
+This uses <a href="http://github.com/archiloque/rest-client">rest-client</a> and <a href="http://flori.github.com/json/">JSON</a>. It's about all I've needed so far. 
+
+I know I should be validating the provided URL against Embedly's <a href="http://api.embed.ly/documentation#services">services API</a>, but I haven't gotten to that quite yet. I'll whip up another post when I do, though. 

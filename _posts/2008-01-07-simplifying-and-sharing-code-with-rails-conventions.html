@@ -1,0 +1,134 @@
+---
+layout: post
+title: Simplifying and sharing code with Rails conventions
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _wp_old_slug: simplifying-and-sharing-code-by-using-rails-conventions
+  _edit_last: '1'
+---
+One of the benefits of <a href="http://en.wikipedia.org/wiki/Convention_over_Configuration">convention over configuration</a> in Rails is that you can make assumptions about a lot of stuff. A good example of this is the <i>user_id</i> column found in most Rails database tables. 
+
+If you see a <i>user_id</i> column in a schema, you can typically infer that it represents the unique identifier (<i>id</i>) of the user that created that record. This leads to all kinds of interesting opportunities for code simplification.
+
+I'll take you through a basic example found in my open-source app, <a href="http://almosteffortless.com/eldorado">El Dorado</a> to demonstrate. This example will show you how to share code related to authentication throughout your app. We'll start by looking at the <b>user</b>, <b>topic</b>, and <b>post</b> database objects defined in <a href="http://eldorado.googlecode.com/svn/trunk/db/schema.rb">schema.rb</a>:
+
+<pre lang="ruby">
+create_table "users", :force => true do |t|
+  t.string   "login"
+  t.boolean  "admin", :default => false
+  # ...
+end
+
+create_table "topics", :force => true do |t|
+  t.integer  "user_id"
+  t.string   "title"
+  # ...
+end
+
+create_table "posts", :force => true do |t|
+  t.integer  "user_id"
+  t.text     "body"
+  # ...
+end
+</pre>
+
+According to Rails conventions, the <i>user_id</i> field in the topics and posts tables should reference the <i>id</i> field in the users table. (The id field is assumed and not mentioned in the schema.rb file.) This convention is what allows you to do things like:
+
+<pre lang="ruby">
+@user = User.find(1)
+@user.topics # the topics the user has created
+@user.posts # the posts the user has created
+</pre>
+
+This also lets you share code amongst all of the controllers and views in an application. Let's use a basic concept for authentication: checking for permission to edit an item. Using some of the conventions introduced in the <a href="http://svn.techno-weenie.net/projects/plugins/restful_authentication/">restful_authentication</a> plugin, we'll be able to add some basic permission checking that will work for any model that has a <i>user_id</i> field, and for users that have an <i>id</i> field. We'll assume that a user has permission to edit an item if (a) they're an administrator, or (b) they've created the item they're trying to edit. 
+
+We'll start by adding the following to <a href="http://eldorado.googlecode.com/svn/trunk/app/controllers/application.rb">application.rb</a>:
+
+<pre lang="ruby">
+class ApplicationController < ActionController::Base
+  
+  helper_method :current_user, :logged_in?, :admin?, :can_edit?
+  
+  def current_user
+    @current_user ||= ((session[:user_id] && User.find_by_id(session[:user_id])) || 0)
+  end
+    
+  def logged_in?()
+    current_user != 0
+  end
+  
+  def admin?()
+    logged_in? && (current_user.admin == true)
+  end
+    
+  def can_edit?(current_item)
+    return false unless logged_in?
+    if request.path_parameters['controller'] == "users"
+      return current_user.admin? || (current_user == current_item) 
+    else
+      return current_user.admin? || (current_user.id == current_item.user_id) 
+    end
+  end
+  
+  def can_edit
+    redirect_to root_path and return false unless logged_in?
+    klass = request.path_parameters['controller'].camelize.singularize.constantize
+    @item = klass.find(params[:id])
+    if request.path_parameters['controller'] == "users"
+      redirect_to root_path and return false unless admin? || (current_user == @item)
+    else
+      redirect_to root_path and return false unless admin? || (current_user == @item.user)
+    end
+  end
+
+  # ...
+
+end
+</pre>
+
+The <i>current_user</i> bit assumes that you're setting the <i>session[:user_id]</i> value to the currently logged-in user's <i>id</i>. (If you're unsure how to accomplish this and/or aren't doing it already, you should give the <a href="http://svn.techno-weenie.net/projects/plugins/restful_authentication/">restful_authentication</a> plugin a gander.) The <i>logged_in?</i> helper will return true if the user is logged in, and the <i>admin?</i> helper will return true if the logged-in user has their <i>admin</i> attribute set to true. 
+
+The <i>can_edit?</i> helper and the <i>can_edit</i> action are where the real action is. We'll start with the <i>can_edit</i> action, which allows you to do the following in any controller in your application:
+
+<pre lang="ruby">
+class TopicsController < ApplicationController
+
+  before_filter :can_edit, :only => [:edit, :update, :destroy]
+
+end
+
+# ...
+
+class PostsController < ApplicationController 
+  
+  before_filter :can_edit, :only => [:edit, :update, :destroy]
+
+end
+
+# ...
+
+class UsersController < ApplicationController
+  
+  before_filter :can_edit, :only => [:edit, :update, :destroy]
+
+end
+</pre>
+
+The <i>can_edit</i> action is accessible to any controller, and it can be used to check the editing permissions for any item without any additional code overhead. If the user is logged in and is an administrator, they'll be allowed to proceed. Otherwise, the action will check to see if the user is trying to edit an item that they created, or their own user account. If so, they'll be allowed to proceed; if not, they'll be redirected to the root_path. This, of course, requires the defining of a <i>root_path</i> in your <a href="http://eldorado.googlecode.com/svn/trunk/config/routes.rb">routes.rb</a> file:
+
+<pre lang="ruby">
+map.root :controller => 'home'
+</pre>
+
+That's pretty nice, and there's also the <i>can_edit?</i> helper that can also be shared across all views. Here's a couple of examples. The first would be useful in, say, the <i>user/show</i> view. The second, perhaps in <i>posts/show</i>...?
+
+<pre lang="ruby">
+<%= link_to 'Edit User', edit_user_path(@user) if can_edit?(@user) %>
+<%= link_to 'Edit Post', edit_post_path(@post) if can_edit?(@post) %>
+</pre>
+
+And there you have a great example of the benefits of convention in Rails app. You can do a lot of cool stuff with very little code. Plus, <a href="http://en.wikipedia.org/wiki/Don%27t_repeat_yourself">DRY</a> code is always nice. Of course, you can dig further into the whole kit and kaboodle behind this by checking out the <a href="http://almosteffortless.com/eldorado/">El Dorado</a> source...

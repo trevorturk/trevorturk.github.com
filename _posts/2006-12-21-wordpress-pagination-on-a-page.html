@@ -1,0 +1,28 @@
+---
+layout: post
+title: WordPress Pagination on a Page
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+One of the goals in redesigning this site was to reduce the amount of emphasis on the weblog - at least on the home page - without losing any standard blog functionality. I also tried to combine the weblog and the full archives on one page in the interest of saving space. I'm not sure how it'll scale, but it seems to work well enough for now.
+
+The only problem I ran into in pushing the weblog off the front page was in using "pagination" from a "page". Pagination is easy when your blog is displayed from the home page, but there isn't any trick built into the <a href="http://codex.wordpress.org/Template_Tags/query_posts">query_posts()</a> function to help if you're trying to display a standard blog from within a page.
+
+After bumbling around for a while, I came across this <a href="http://wordpress.org/support/topic/38210?replies=14#post-215414">small bit of code</a> from Kafkaesqui that did the trick:
+
+<pre>&lt;?php $page = (get_query_var('paged')) ? get_query_var('paged') : 1;
+query_posts("showposts=5&paged=$page");
+while ( have_posts() ) : the_post() ?&gt;
+&lt;h2&gt;&lt;a href="&lt;?php the_permalink() ?&gt;"&gt;&lt;?php the_title() ?&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;span class="entry-date"&gt;&lt;?php the_time('F d, Y'); ?&gt;&lt;/span&gt;
+&lt;?php the_content(); ?&gt;
+&lt;?php endwhile ?&gt;</pre>
+
+I've added some code in there to complete <a href="http://codex.wordpress.org/The_Loop">the_loop</a> as well. I'm sure this will come in handy as people continue to extend WordPress beyond what it was originally intended to do - and I hope this post can save some poor person on Google the headache I've got right now :)
+
+Head over to the all new <a href="http://almosteffortless.com/weblog/">Weblog</a> page to see the results of this endeavor, and make sure to click the "older posts" link at the bottom of the page.

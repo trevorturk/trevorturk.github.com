@@ -1,0 +1,19 @@
+---
+layout: post
+title: ! 'The pg_query_analyzer gem: PostgreSQL query analysis in your development
+  logs'
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+I just wrapped up a small gem called <a href="http://github.com/trevorturk/pg_query_analyzer">pg_query_analyzer</a> that's based on some old code that can be found on the interwebs in various states of disrepair. This latest incarnation is a simple gem that provides a PostgreSQL query analysis in the development log of a Rails app. 
+
+This is useful for finding indexes that your database may benefit from. There are alternatives available (e.g. <a href="http://github.com/eladmeidar/rails_indexes">rails_indexes</a>) that evaluate your application and guess at which indexes might help you, and provide example migrations to add them. That kind of thing is definitely cool, but I've found that performing a manual analysis using tools like this gem I'm releasing will typically lead to the best results. Perhaps you would consider using both techniques? It's smart, at least, to verify that the database indexes you add to your application are having the intended effect of speeding things up!
+
+I hope you'll find the <a href="http://github.com/trevorturk/pg_query_analyzer">README</a> I've provided with this gem to be helpful in your quest for a fast and scalable application using PostgreSQL. 
+
+Good luck, and good indexing ;)

@@ -1,0 +1,28 @@
+---
+layout: post
+title: Automatically Rotate your Log Files in Development
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+I'm trying to save hard drive space, since I've got this super small (and fast?) SSD hard drive on the way. I noticed that I was using a TON of space to store totally worthless logs for my Rails apps. Now, I know I could set up proper log rotation, but I don't feel like going through the trouble for my local machine. 
+
+Here's a quick tip I picked up <a href="http://marklunds.com/articles/one/410">here</a> that will set your logs to automatically rotate in the test and development environments. Just add the following line to these files:
+
+<ul>
+<li>config/development.rb</li>
+<li>config/test.rb</li>
+</ul>
+
+<pre>config.logger = Logger.new(config.log_path, 2, 20.megabytes)</pre>
+
+Make sure you've got these in your .gitignore file as well:
+
+<pre>/log/*
+*.log</pre>
+
+That will keep your log files under control, but with plenty of room for digging in if need be. 

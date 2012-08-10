@@ -1,0 +1,33 @@
+---
+layout: post
+title: no-www Rack Middleware
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+I'm pleased to present my submission to the <a href="http://coderack.org/">CodeRack</a> contest: <b>no-www</b>. 
+
+This middleware catches requests that begin with “www” and redirects them to the more reasonable "non-www" address. 
+
+For example: http://www.example.com -> http://example.com
+
+While such redirects might better be performed from within an Apache or nginx config, some hosts (i.e. <a href="http://heroku.com">Heroku</a>) don't give you access to configure the server as such. 
+
+If you're unfamiliar with the <i>no-www</i> movement, the philosophy is simple. Websites should have a canonical address. This address shouldn’t begin with “www” because the use of "www" is unnecessary and wasteful. See <a href="http://no-www.org/">http://no-www.org/</a> for details. 
+
+And, without further ado:
+
+<script src="http://gist.github.com/224812.js"></script>
+
+If you know what <a href="http://rack.rubyforge.org">Rack</a> is, you problably already know how to use this. Still, an example usage for a Rails app wouldn't hurt. Start by copying the above middleware into <i>lib/no_www.rb</i>. Then, configure your application to use the middleware by placing the following in <i>config/environment.rb</i>: 
+
+<pre lang="ruby">
+Rails::Initializer.run do |config|
+  config.middleware.use “NoWWW” if RAILS_ENV == ‘production’
+end</pre>
+
+No more www. 

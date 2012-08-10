@@ -1,0 +1,40 @@
+---
+layout: post
+title: ! 'KZAK: an open source web-based jukebox'
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+I'm happy to announce that I've made my latest side-project open source. It's called <a href="http://github.com/trevorturk/kzak">KZAK</a>. It's a simple web-based jukebox that you can use to share and listen to music with your friends. 
+
+The feature set is pretty limited right, but I hope to continue to improve things over time. I'm already encouraged by how quickly some of my friends have taken to the app, and I think you'll enjoy it - even in this early form.
+
+So far you can:
+
+<ul>
+	<li>Invite people to use the site via email</li>
+	<li>Upload mp3, mp4, and m4a (iTunes) tracks with an upload queue and progress</li>
+	<li>Listen to the uploaded music as a playlist, even in an inactive browser tab</li>
+</ul>
+
+Like I said, it's pretty basic (invite, upload, listen) but surprisingly functional. Plus, I'm using all kinds of interesting stuff behind the scenes, which is why I really wanted to share the code ;) 
+
+To begin with, we've got a Rails app that's using the latest and greatest in user authentication technology: <a href="http://github.com/plataformatec/devise">Devise</a>. If you're using something like restful_authentication or Authlogic, I implore you to take a look at Devise. It's a phenomenal improvement from these other two popular options, and it's being actively supported by <a href="http://github.com/josevalim">José Valim</a>, the latest Rails committer. Essentially, it's a Rails Engine that sits on top of <a href="http://github.com/hassox/warden">Warden</a> - a generalized Rack authentication framework. This combination is extraordinarily flexible and easy to use. It's opinionated (in a good way) while simultaneously doing a good job of staying out of the way. It introduces very little code into your application, and the source is well documented, well tested, and easy to follow. A++ highly recommended. 
+
+To handle the file uploads, I've switched from <a href="http://github.com/thoughtbot/paperclip">Paperclip</a> to <a href="http://github.com/jnicklas/carrierwave">CarrierWave</a>. While Paperclip has (and continues) to serve me well in many applications I work with, I really appreciate the modular approach that CarrierWave takes. It's agnostic as to which of the popular S3 clients you use, supporting both <a href="http://amazon.rubyforge.org/">aws/s3</a> and <a href="http://rightaws.rubyforge.org/">right_aws</a>. It's also ORM agnostic and not tightly coupled to Active Record. The tight coupling of Paperclip has caused us some grief at work, and I'm also confused about the state of Paperclip's support for aws/s3 and right_aws. So, I was happy to find this new project, and the maintainer <a href="http://github.com/jnicklas/">Jonas Nicklas</a> seems to be an extremely responsive and helpful dude, which is always good thing. The code looks great, and I've had an easy time working with this library so far. 
+
+In concert with CarrierWave, I'm also using the venerable <a href="http://swfupload.org/"> SWFUpload</a> to support upload queues and progress meters. I'm absolutely baffled as to why this kind of thing isn't easy/possible to support without Flash, but here we are. Of course, I have a fallback "regular upload form" that still uses some ajax to make things a little easier. There are a few blog posts and tutorial applications around on GitHub that helped me get SWFUpload working with Rails and jQuery, and I'm happy to put back out an example application that other people can refer to if they're interested in supporting upload queues and/or upload progress meters. 
+
+Next, to support audio playback while I work on supporting html5 properly, I'm using the extremely awesome <a href="http://www.schillmania.com/projects/soundmanager2/"> SoundManager 2</a>. Unfortunately, this is another part of the infrastructure using Flash, but the features and functionality of SoundManager are really something special. I've only scratched the surface of what this library can do, but I'm already enjoying it quite a bit. If you're working with jQuery and SoundManager, you may find the KZAK source code worth perusing. You might also take a look at <a href="http://github.com/adriengibrat/jQuery-SoundManager/">Adrien Gibrat's plugin</a>, which is a cool jQuery plugin that packs a lot of functionality. 
+
+Also running in the background of KZAK is a Twitter-style following/unfollowing system that I haven't exposed much of yet. It's basically the same system that's powering <a href="http://flowcoder.com">Flowcoder</a>. You can check out this <a href="http://github.com/trevorturk/tweets">example app</a> I made if you're interested in seeing that on its own. Currently, all users in the system follow (and are followed by) all of the other users. I plan to allow for "unfollowing" users some time soon, which will allow for some healthy splintering of the community in the case that you're not interested in everything that everyone is uploading. 
+
+Finally - and perhaps best of all - KZAK is fully compatible with and easy to install on Heroku. All you need is an S3 account and you're ready to get started with a web-based jukebox for you and your friends <i>for free</i>. 
+
+<a href="http://github.com/trevorturk/kzak">http://github.com/trevorturk/kzak</a>
+
+Anyway, please feel free to dig around the source code if you're interested in any of this. I think there's a lot of good stuff in there, especially considering that the Ruby portion of the app is clocking in at under ~250 LOC right now. Thanks, open source community ;)

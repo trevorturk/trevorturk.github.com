@@ -1,0 +1,30 @@
+---
+layout: post
+title: Pretty dates in Rails 3
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _wp_old_slug: ''
+  _edit_last: '1'
+---
+It's very easy to define your own custom date formats for display in a Rails 3 app. Just check out <a href="http://caboo.se/doc/classes/ActiveSupport/CoreExtensions/Time/Conversions.html#M005558">the docs</a>.
+
+A quick example:
+
+<pre>
+# config/initializers/time_formats.rb
+Time::DATE_FORMATS[:month_and_year] = "%B %Y"
+Time::DATE_FORMATS[:pretty] = lambda { |time| time.strftime("%a, %b %e at %l:%M") + time.strftime("%p").downcase }
+</pre>
+
+Then, you can do:
+
+<pre>
+@date.to_s(:month_and_year) # => October 2010
+@date.to_s(:pretty) # => Mon, Oct 4 at 7:00pm
+</pre>
+
+The "pretty" example is pretty tricky, actually. It's using some lesser known strftime conversions to show dates without leading zeros and downcasing the am/pm. 

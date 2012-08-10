@@ -1,0 +1,126 @@
+---
+layout: post
+title: Simple Localization in Rails 2.2
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+I've been staying on the sidelines when it comes to localization in Rails for a while now, but I couldn't help getting excited about the <a href="http://weblog.rubyonrails.org/2008/7/20/internationalization-in-edge-rails-and-more">upcoming</a> <a href="http://www.artweb-design.de/2008/7/18/finally-ruby-on-rails-gets-internationalized">native</a> <a href="http://www.artweb-design.de/2008/7/18/the-ruby-on-rails-i18n-core-api">support</a> in Rails 2.2. So, with some <a href="http://groups.google.com/group/rails-i18n/browse_thread/thread/2bcddef0d903e3a2">guidance from the Rails i18n team</a>, I decided to give things a try. 
+
+I've been extremely pleased with the results so far, but I'm all ears if anyone would like to offer suggestions on how to better achieve basic localization for a Rails app. Here's where I'm at so far in a kind of how-to format. This is all plugin-free, using only what's available in core. I expect that plugins will be coming out to add features and functionality, but you can accomplish quite a bit without any extras. 
+
+You can try to follow along, or just get the gist be reading through the steps. As noted in the comments, this is just a proof of concept, is not secure, and shouldn't be used in production as-is.
+
+1. Make a new Rails app and freeze edge:
+
+<pre lang="shell">
+~ $ rails i18n
+~ $ cd i18n
+~ $ rake rails:freeze:edge
+</pre>
+
+2. Make a couple of translation stores (files) in lib/locale directory:
+
+<pre lang="ruby">
+# lib/locale/en-US.rb
+{ 'en-US' => {
+  :hello_world => "Hello World",
+  :hello_flash => "Hello Flash"
+}}
+
+# lib/locale/pirate.rb
+{ 'pirate' => {
+  :hello_world => "Ahoy World",
+  :hello_flash => "Ahoy Flash"
+}}
+</pre>
+
+3. Set I18n.locale with a before_filter:
+
+<pre lang="ruby">
+# app/controllers/application.rb
+class ApplicationController < ActionController::Base
+
+  before_filter :set_locale
+  
+  def set_locale
+    locale = params[:locale] || 'en-US'
+    I18n.locale = locale
+    I18n.load_path += Dir[ File.join(RAILS_ROOT, 'lib', 'locale', '*.{rb,yml}') ]
+  end
+
+end
+</pre>
+
+4. Make a controller and route to test things out, using symbols from your translation for user messages:
+
+<pre lang="ruby">
+# config/routes.rb
+ActionController::Routing::Routes.draw do |map|
+  map.root :controller => 'home', :action => 'index'
+end
+
+# app/controllers/home_controller.rb
+class HomeController < ApplicationController
+  def index
+    flash[:notice] = :hello_flash
+  end
+end
+
+</pre>
+
+5. Create a view using symbols for user messages and use the "t" helper to translate:
+
+<pre lang="ruby">
+# app/views/home/index.html.erb
+<h1><%=t :hello_world %></h1>
+
+<p><%=t flash[:notice] %></p>
+
+<%= link_to 'en-US', root_path(:locale => 'en-US') %> or 
+<%= link_to 'pirate', root_path(:locale => 'pirate') %>
+</pre>
+
+6. Fire up the old script/server and check it out:
+
+<pre lang="shell">
+~ $ script/server
+</pre>
+
+<img alt="" src="http://s3.amazonaws.com/almosteffortless/i18n-en.png" />
+
+<img alt="" src="http://s3.amazonaws.com/almosteffortless/i18n-pirate.png" />
+
+I think that about covers it. Of course, this is a very simple example, but it should cover the basics well enough to get started. Please let me know if you have any ideas about how to simplify/improve this, and thanks again to the Rails <a href="http://groups.google.com/group/rails-i18n">i18n team</a> for all of their work - everything looks great so far!
+
+<b>Update</b>: You can use YAML to store translations now. Also, the I18n.populate and I18n.store_translations are no longer necessary (or available).
+
+<pre lang="ruby">
+# lib/locale/pirate.yml
+pirate:
+  hello_world: Ahoy World
+  hello_flash: Ahoy Flash
+
+# app/controllers/application.rb
+I18n.load_path += Dir[ File.join(RAILS_ROOT, 'lib', 'locale', '*.{rb,yml}') ]
+</pre>
+
+<b>Update</b>: Rails 2.2 comes with simple i18n support fully baked in. This is great news because it makes adding internationalization support even easier. Check out <a href="http://weblog.rubyonrails.org/2008/11/18/new-rails-2-2-i18n-defaults">the announcement on the Rails site</a> for details, but the short version is that YAML files put into config/locales can be loaded up with a simple call to their file name. Here's an example:
+
+<pre lang="ruby">
+# config/locales/en.yml
+en:
+  hello_world: Hello World
+
+# config/environment.rb
+config.i18n.default_locale = :en
+
+# app/views/home/index.html.erb
+<h1><%=t :hello_world %></h1>
+</pre>
+
+Rails + localization - can it get any easier? :)

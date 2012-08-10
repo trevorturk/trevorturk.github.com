@@ -1,0 +1,49 @@
+---
+layout: post
+title: Integrating Wordpress and PunBB
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+You might have noticed the new <a href="http://eldorado.heroku.com/">Forum</a> link on the top of this site. I've just finished integrating the lovely <a href="http://www.punbb.org">PunBB</a> with the amazing <a href="http://www.wordpress.org">Wordpress</a>, featuring the brand new <a href="http://www.binarybonsai.com/wordpress/k2/">k2</a> theme. Visually integrating the two programs is a very easy process, made even easier by the tutelage of <a href="http://www.liewcf.com/wp/archives/2005/04/integrate-punbb-forum-into-wordpress/">LiewCF</a>, who posted a nice guide on his blog.
+
+I'll walk you through the process of integrating PunBB with Wordpress/k2 here at &aelig;. 
+
+<b>1</b>. Install PunBB and add a link to your forum (or whatever you call it) to your Wordpress theme header. In my case, this meant adding the a link to the forum like this: 
+
+<pre>&lt;li class="page_item"&gt;&lt;a href="http://eldorado.heroku.com"&gt;Forum&lt;/a&gt;&lt;/li&gt;</pre>
+
+within the
+
+<pre>&lt;ul class="menu"&gt;&lt;/ul&gt;</pre>
+
+section near the end of the k2 header code. You can <a href="http://s3.amazonaws.com/almosteffortless/k2header.zip">download my k2 header</a> file, if you'd like to have a look at it.
+
+<b>2</b>. The only other thing you need to edit is the main.tpl file included with PunBB. If you're using the default k2 theme, you can <a href="http://s3.amazonaws.com/almosteffortless/main.tpl.zip">download my main.tpl file</a>, and simply replace yours with that one. The file is located in <pre>/include/template/</pre> within the PunBB folder. This should cover you using the Oxygen PunBB style, but some other styles might not look right. You can edit these via the Profile -> Display options when you're logged into PunBB.
+
+<b>Customized k2 Theme</b>. If you are using a customized version of the k2 theme, take a look at the code added in-between the <pre>&lt;!-- Wordpress Template CSS --&gt;</pre> code comments in the main.tpl file. You might want to change the colors added in the CSS <pre>&lt;style type="text/css"&gt;&lt;/style&gt;</pre> area to match your own. This should allow you to override the PunBB colors enough to make it match your theme. If you're using a different custom k2 stylesheet, you'll want to include that at the top of your main.tpl file instead of the <i>sample.css</i> CSS.
+
+<b>Other Themes</b>. If you made a lot of changed to k2, or you aren't using k2 at all, you'll need to collect the CSS, header, and footer code from your blog manually. Do a <i>View Source</i> on your blog, and copy the code for your CSS stylesheets, header, and footer into your PunBB main.tpl file. You might want to begin by downloading the main.tpl file I linked to above, and note the code comment areas, which indicate exactly where to paste in your Wordpress code:
+
+<pre>&lt;!-- Wordpress Template CSS --&gt;
+&lt;!-- Wordpress Template Header --&gt;
+&lt;!-- Wordpress Template Footer --&gt;
+</pre>
+
+You'll have to do some fiddling, but the basic idea is to get the code from your Wordpress blog into those 3 sections of the main.tpl file. The goal is to wrap your PunBB forum within your Wordpress header and footer, while including the CSS for the overall look and feel. Another small thing is to give the list-item that contains the link to your forum a class of <i>current-page-item</i> as I've done in my main.tpl file. This will highlight the forum link in the header when you're in the forum.
+
+<b>Update</b>: I made a couple of small changed to get things working properly in (boo!) Internet Explorer. My main.tpl file contains the fixes. I added this line to the CSS: <pre>.pun { font-size: 11px !important; }</pre> and also changed this line <pre>#punwrap { padding: 0; padding-top: 10px; margin: 0; width: 760px; }</pre> to sets the font size and width specifically. So, if you're using the flexible width or a different font size in k2, you might need to make some tweaks. 
+
+<b>Update 2</b>: I've updated my main.tpl file again to match the new look on this site. If you're interested, please feel free to <a href="http://s3.amazonaws.com/almosteffortless/main2.tpl.zip">take a look</a>. Be careful, though - this file is straight from my site, so it still contains code to include <a href="http://www.haveamint.com">Mint</a>, links to my CSS, header navigation bar, footer, etc etc etc. If you're going to use this file on your site, you'll most certainly have to edit it first.
+
+<b>Update 3</b>: Another redesign, another <a href="http://s3.amazonaws.com/almosteffortless/main3.tpl.zip">new main.tpl</a>.
+
+That's it! Discuss... in the <a href="http://eldorado.heroku.com/">forum &raquo;</a>
+
+<b>Update 4</b>: By the way, I ended up leaving PunBB and writing this instead: 
+
+<a href="http://almosteffortless.com/eldorado/">http://almosteffortless.com/eldorado/</a>

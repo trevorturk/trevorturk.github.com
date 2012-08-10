@@ -1,0 +1,42 @@
+---
+layout: post
+title: ! 'Cloudfront: no-brainer CDN support for S3'
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+  _oembed_7e18d05bb7f10bb879c691b1305955c2: ! '{{unknown}}'
+  _oembed_4c7198fbe23262b371104d3f927dc6be: ! '{{unknown}}'
+---
+Amazon's <a href="http://aws.amazon.com/cloudfront/">CloudFront</a> is a phenomenal addition to their <a href="https://s3.amazonaws.com/">S3</a> file-hosting service.
+
+<blockquote>Amazon CloudFront is a web service for content delivery. It integrates with other Amazon Web Services to give developers and businesses an easy way to distribute content to end users with low latency, high data transfer speeds, and no commitments. 
+
+Amazon CloudFront delivers your static and streaming content using a global network of edge locations. Requests for your objects are automatically routed to the nearest edge location, so content is delivered with the best possible performance. Amazon CloudFront works seamlessly with Amazon Simple Storage Service (Amazon S3) which durably stores the original, definitive versions of your files. Like other Amazon Web Services, there are no contracts or monthly commitments for using Amazon CloudFront – you pay only for as much or as little content as you actually deliver through the service.</blockquote> 
+
+If you're using S3 and you're not using CloudFront, you should take a moment to check it out. You'll be surprised at how little work it takes to set up, how much it speeds up your assets serving, and how little it costs. 
+
+CloudFront is a part of the Amazon <a href="https://console.aws.amazon.com/">Console</a> now, so it's very easy to set up. All you need to do is to create a distribution, which means enabling CloudFront for a specific S3 bucket and choosing a CNAME that you'll serve your assets from. Then, you need to set up the CNAME in your DNS configuration on GoDaddy and you're done. 
+
+The following two screenshots illustrate the process. 
+
+Step one is to creating the distribution in Amazon's Console:
+
+<img src="http://almosteffortless.s3.amazonaws.com/cloudfront-1.png" style="width:580px" />
+
+Note the <b>Domain Name</b> and <b>CNAMEs</b> sections in the lower half of the screen. I've chosen the CNAME of "s3.kzak.org" because I want my S3 bucket to be aliased such that URLs will look like this:
+
+http://s3.kzak.org/example.jpg
+
+CloudFront has provided me with the domain name that I need to provide to GoDaddy. Since I'm using their "Total DNS" option, all I have to do is add the CNAME like so:
+
+<img src="http://almosteffortless.s3.amazonaws.com/cloudfront-2.png" style="width:580px" />
+
+Notice that the CNAME of "s3" is set to the domain name that CloudFront provided me. 
+
+These changes seem to take about 30 minutes to percolate through the internets, but that's all it takes to get started with CloudFront. 
+
+For bonus points, you may want to read up about <a href="http://api.rubyonrails.org/classes/ActionView/Helpers/AssetTagHelper.html">using multiple asset hosts in Rails</a> and apply this technique in your applications for additional throughput. 

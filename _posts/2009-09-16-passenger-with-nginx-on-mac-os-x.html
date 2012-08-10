@@ -1,0 +1,105 @@
+---
+layout: post
+title: Passenger with nginx on Mac OS X
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+<b>Update</b>: This is a more up-to-date guide here: <a href="http://trevorturk.com/2010/09/22/passenger-with-nginx-on-mac-os-x-2nd-edition-2/">Passenger with nginx on Mac OS X (2nd edition)</a>
+
+Setting up <a href="http://www.nginx.net/">nginx</a> with <a href="http://www.modrails.com/">Passenger</a> support turns out to be fairly easy. 
+
+Start by making sure you have the most recent version of Passenger, then install the nginx module. This will actually install and compile nginx with the Passenger module enabled, which is handy. Choose the recommended/default options when the installer prompts you.
+
+<pre>sudo gem update passenger
+sudo passenger-install-nginx-module</pre>
+
+Then, open up the nginx config file:
+
+<pre>mate /opt/nginx/conf/nginx.conf</pre>
+
+Add the following line to the top of the file:
+
+<pre>daemon off;</pre>
+
+This will prevent the "502 Bad Gateway" error you may see otherwise. I'm not sure why this is necessary, but I read about it <a href="http://www.ruby-forum.com/topic/161424">here</a>, and it seems to do the trick. nginx specifies that this should only be used for development, though. 
+
+Next, find the <i>http {</i> block, which should start around line 15 or so. You'll want to add a <i>server {</i> block within the <i>http {</i> block for each of your Rails/Rack applications, like so:
+
+<pre>server {
+   listen 80;
+   server_name eldorado.local;
+   root /Users/trevorturk/Code/eldorado/public;
+   passenger_enabled on;
+   rails_env development;
+}</pre>
+
+You'll need an entry in your <i>hosts</i> file if you don't already have one. Simply open up the file:
+
+<pre>mate /etc/hosts</pre>
+
+...and add lines for each of the apps you plan to run, like so:
+
+<pre>127.0.0.1 eldorado.local </pre>
+
+Now, we can set up a launchd item, so that nginx will start up automatically after a system reboot. Create a new plist file by opening it up in TextMate:
+
+<pre>mate /System/Library/LaunchDaemons/nginx.plist</pre>
+
+...and paste the following code in, which was kindly provided for us by this <a href="http://innenin.blogspot.com/2009/05/running-nginx-on-osx.html">helpful person</a>:
+
+<script src="http://gist.github.com/188167.js"></script>
+
+Then, run the following command to load it:
+
+<pre>launchctl load /System/Library/LaunchDaemons/nginx.plist</pre>
+
+Now, you can reboot your system and make sure it's all working as expected by visiting <a href="http://eldorado.local">http://eldorado.local</a>, or whatever address you've configured your application to be on. 
+
+I believe this nginx installation will override the existing Apache installation you may have running. This doesn't bother me, so I opened up my System Preferences -> Sharing prefpane and unchecked the Web Sharing box, so Apache is no longer running. If you have any ideas about how to keep both services running cooperatively, please do let me know. 
+
+<b>Update</b>: Here are some additionally configuration options I'm using, which I cobbled together from various sources after Googling for things like "nginx, rails, gzip, expires" and such. Their powers combined, and I seem to have a <a href="http://developer.yahoo.com/yslow/">YSlow</a>-approved setup.
+
+Just above your <i>server {</i> block, around line 40, add the following:
+
+<pre>gzip on;
+gzip_buffers 16 8k;
+gzip_disable "MSIE [1-6]\.";
+gzip_proxied any;
+gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;</pre>
+
+That should cover gzip well enough. 
+
+Then, amend the aforementioned <i>server {</i> block to include some far future expires goodness that takes advantage of the Rails asset_tag helpers:
+
+<pre>server {
+  listen 80;
+  server_name eldorado.local;
+  root /Users/trevorturk/Code/eldorado/public;
+  passenger_enabled on;
+  rails_env development;
+  location ~* \.(ico|css|js|gif|jp?g|png)(\?[0-9]+)?$ {
+      expires max;
+      break;
+  }
+}</pre>
+
+These two configuartion tweeks are, I believe, the rough equivalent of the <a href="http://almosteffortless.com/2009/06/11/speed-up-your-apachepassenger-rails-app-in-2min/">technique previously discussed</a> on this blog for Apache. 
+
+Of course, any additional suggestions, comments, or insights you may have would be most welcome. I'm new to this whole nginx thing, but I'm enjoying it so far. 
+
+<b>Update</b>: Here's an easy way to reload nginx, if you need to make a change to your conf. Make sure to have the following in your <i>/opt/nginx/conf/nginx.conf</i> file:
+
+<pre>pid /var/run/nginx.pid;</pre>
+
+Then, you can make an alias for the reload task in your <i>~/.bash_profile</i>:
+
+<pre>alias nr='sudo kill -HUP `cat /var/run/nginx.pid`'</pre>
+
+In case you're interested, you can check out my full <i>nginx.conf</i> file for local development here: 
+
+<a href="http://gist.github.com/191331">http://gist.github.com/191331</a>
