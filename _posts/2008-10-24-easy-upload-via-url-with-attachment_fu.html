@@ -1,0 +1,83 @@
+---
+layout: post
+title: Easy Upload via URL with attachment_fu
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+Allowing file uploads with <a href="http://github.com/technoweenie/attachment_fu/wikis">attachment_fu</a> is <a href="http://almosteffortless.com/2007/03/25/working-with-attachment_fu/">super easy</a>, but I've found that users sometimes want to be able to "upload" a file directly from a URL. This saves them the steps of downloading the file, finding it on their computer, uploading it into your app, etc. 
+
+I did a bit of digging around before I came across <a href="http://matt.west.co.tt/ruby/passing-remote-web-data-to-attachment_fu/">this handy trick</a> that makes it pretty painless to add uploading via a URL to your app. I've wrapped up the code a bit and added in a few niceties that I found necessary to avoid raising exceptions unnecessarily.  
+
+The best part is that you don't need to change anything about your controller in order to get this to work. All you need is to add the <i>uri</i> attribute to your model and views, and you're good to go. 
+
+<pre lang="ruby">
+# app/models/upload.rb
+
+class Upload < ActiveRecord::Base
+  
+  # ...normal attachment_fu code (has_attachment, etc)...
+
+  # allow uploads via URL
+  require 'open-uri'
+  attr_reader :url
+  def url=(uri)
+    return nil if uri.blank?
+    io = (open(URI.parse(uri)) rescue return nil)
+    (class << io; self; end;).class_eval do
+      define_method(:original_filename) { base_uri.path.split('/').last }
+    end
+    self.uploaded_data = io
+  end
+end
+
+# app/controllers/uploads_controller.rb
+
+class UploadsController < ApplicationController
+
+  # avoid raising exceptions for common errors (e.g. file not found)
+  rescue_from Errno::ENOENT, :with => :url_upload_not_found
+  rescue_from Errno::ETIMEDOUT, :with => :url_upload_not_found
+  rescue_from OpenURI::HTTPError, :with => :url_upload_not_found
+  rescue_from Timeout::Error, :with => :url_upload_not_found
+
+  def new
+    @upload = Upload.new
+  end
+
+  def create
+    @upload = current_user.uploads.build(params[:upload])
+    if @upload.save
+      redirect_to files_path
+    else
+      render :action => "new"
+    end
+  end
+
+  def url_upload_not_found
+    flash[:notice] = "Sorry, the URL you provided was not valid."
+    redirect_to new_upload_path
+  end
+end
+
+# app/views/uploads/new.html.erb
+
+<%= error_messages_for :upload %>
+<% form_for @upload, :html => { :multipart => true } do |f| -%>
+  <%= f.file_field :uploaded_data # normal upload, or... %>
+  <%= f.text_field :url # upload via url %> 
+  <%= submit_tag "Upload", :disable_with => "Upload" %>
+<% end %>
+</pre>
+
+You can see a working example of all this in <a href="http://github.com/trevorturk/eldorado/tree/master">El Dorado</a>. I was bored, so I decided to try my hand at making a screencast. Check it out - it's got an awesome soundtrack at the very least :)
+
+<object width="400" height="300">	<param name="allowfullscreen" value="true" />	<param name="allowscriptaccess" value="always" />	<param name="movie" value="http://vimeo.com/moogaloop.swf?clip_id=2060363&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=&amp;fullscreen=1" />	<embed src="http://vimeo.com/moogaloop.swf?clip_id=2060363&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=&amp;fullscreen=1" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="400" height="300"></embed></object>
+
+If you'd like to use this for multiple models, consider <a href="http://almosteffortless.com/2008/01/29/sharing-code-between-activerecord-models/">refactoring it into a module</a> that you can include elsewhere. 
+
+Hope this helps - and suggestions/improvements are always welcome!

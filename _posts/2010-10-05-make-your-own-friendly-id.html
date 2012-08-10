@@ -1,0 +1,33 @@
+---
+layout: post
+title: Make your own friendly id
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _wp_old_slug: ''
+  _edit_last: '1'
+---
+While something like <a href="http://github.com/norman/friendly_id">friendly_id</a> sounds good, I think it's a bit much for generating pretty urls. 
+
+This is from the friendly_id README:
+
+<blockquote>
+Using FriendlyId, it's easy to make your application use URL's like:
+
+<pre>http://example.com/states/washington</pre>
+
+...instead of:
+
+<pre>http://example.com/states/4323454</pre>
+</blockquote>
+
+A noble goal, to be sure. But once you starting digging into the gem, you realize that it provides a table of it's own for tracking this stuff, plus it's worried about what version of Active Record you're using. 
+
+I don't know about you, but I think it's much easier to roll your own for this kind of thing. Less dependencies is generally a win in my experience. 
+
+Anyway, here's a gist of a diff showing all of the steps necessary to generate a "friendly id" or "pretty url" in one go. It's short enough that I think you'll be able to sort it out for yourself:
+
+<script src="http://gist.github.com/612127.js?file=gistfile1.diff"></script>

@@ -1,0 +1,23 @@
+---
+layout: post
+title: The flash_cookie_session gem
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _wp_old_slug: ''
+  _edit_last: '1'
+---
+Rails 3 cookie sessions can cooperate with Flash. It's a pain in the ass, but it is possible. 
+
+I just pushed up a small gem called <a href="http://github.com/trevorturk/flash_cookie_session">flash_cookie_session</a> that's useful for Flash-based file uploaders (SWFUpload, Uploadify, Plupload, etc) that need to cooperate with Rails. 
+
+The problem is that Rails uses cookie-based sessions to keep track of the current_user, etc. You may also have to worry about the authenticity_token being passed around if you’re using protect_from_forgery and you’d like to avoid those pesky InvalidAuthenticityToken errors.
+
+There are many, many blog posts about this: <a href="http://www.google.co.uk/search?q=rails+flash+upload">http://www.google.co.uk/search?q=rails+flash+upload</a>
+
+There are many possible solutions. This gem represents a meager attempt to make this all a bit easier to deal with in Rails 3. No need for special routes, no need to manually configure FlashSessionCookieMiddleware, etc.
+
+The installation instructions and more information can be found here: <a href="http://github.com/trevorturk/flash_cookie_session">http://github.com/trevorturk/flash_cookie_session</a>

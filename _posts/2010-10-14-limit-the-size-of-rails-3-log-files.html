@@ -1,0 +1,27 @@
+---
+layout: post
+title: Limit the size of Rails 3 log files
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _wp_old_slug: ''
+  _edit_last: '1'
+---
+Log files can get really huge. 
+
+Luckily, it's easy to automatically rotate your log files in dev/test for a Rails 3 app. 
+
+<i>.gitignore</i>:
+<pre>log/*.log.*</pre>
+
+<i>config/development.rb</i> and <i>config/test.rb</i>:
+
+<pre># auto rotate log files, keep 2 of 5MB each
+config.logger = Logger.new(config.paths.log.first, 1, 5.megabytes)</pre>
+
+You can adjust the number of logs and size according to your needs, but this is a good start. 
+
+If you get an error because of the 5.megabytes, just put "5242880" instead. 

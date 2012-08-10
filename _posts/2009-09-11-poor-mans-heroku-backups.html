@@ -1,0 +1,18 @@
+---
+layout: post
+title: Poor Man's Heroku Backups
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+Here's a quick and dirty way to <a href="http://docs.heroku.com/backups">back up</a> all of your <a href="http://heroku.com">Heroku</a>-powered databases using their <a href="http://adam.blog.heroku.com/past/2009/2/11/taps_for_easy_database_transfers/">Taps</a> gem with one easy command. It works well enough for my simple needs, but any improvements you've got would be most welcome!
+
+Just add the following to your ~/.bash_profile, and you're good to go:
+
+<script src="http://flowcoder.com/59.js"></script>
+
+<b>Update:</b> I've posted a technique for enabling <a href="http://almosteffortless.com/2010/04/14/automated-heroku-backups/">automatic nightly PostgreSQL database backups from Heroku to Amazon S3</a> that may be of interest as well.

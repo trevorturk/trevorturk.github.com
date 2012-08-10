@@ -1,0 +1,109 @@
+---
+layout: post
+title: Are 37signals and Amazon.com building the ultimate Ruby on Rails hosting solution?
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+I was driving in my car, listening to the latest <a href="http://www.businessweek.com/search/podcasting.htm">Business Week Podcast</a>, when an interesting thought occurred to me: what if <a href="http://37signals.com/">37signals</a> and <a href="http://www.amazon.com">Amazon.com</a> are putting together a new web hosting service along the same lines as the new grid platform at <a href="http://mediatemple.net/">Media Temple</a>?
+
+Imagine a reliable host that could provide effortless scalability combined with a killer application deployment solution. What if there was an "official" <a href="http://rubyonrails.org/">Ruby on Rails</a> host from the creators of the framework itself?
+
+<h3>Jeff Bezos</h3>
+
+<img style="float:right;margin-left:20px;margin-bottom:20px" src="http://s3.amazonaws.com/almosteffortless/jeffbezos.jpg" alt="jeff-bezos" />
+
+In July, 37signals <a href="http://www.37signals.com/svn/archives2/bezos_expeditions_invests_in_37signals.php">announced</a> that they had taken a minority private equity investment from Jeff Bezos of Amazon.com:
+
+<blockquote>Bezos Expeditions, a personal investment company of Jeff Bezos, has made a minority private equity investment in 37signals.</blockquote>
+
+Although they didn't say much about the investment, they took the time to say the following about Jeff Bezos:
+
+<blockquote>With a few exceptions, all the VCs could offer us was cash and connections. We're fine on both of those fronts. We don't need their money to run the business and our little black book is full. We're looking for something else.
+
+What we've been looking for is the wisdom of a very special entrepreneur who's been through what we're going through. Someone who sees things a little differently and makes us feel right at home. Someone with a long term outlook, not a build-to-flip mentality.</blockquote>
+
+<h3>Amazon.com</h3>
+
+<img style="float:right;margin-left:20px;margin-bottom:20px" src="http://s3.amazonaws.com/almosteffortless/100014192753.gif" alt="amazon" />
+
+The November 13th cover story in Business Week - 
+<a href="http://www.businessweek.com/magazine/content/06_46/b4009001.htm">Jeff Bezos' Risky Bet</a> - details the new plan Jeff Bezos has been hatching:
+
+<blockquote>Bezos wants Amazon to run your business, at least the messy technical and logistical parts of it, using those same technologies and operations that power his $10 billion online store. In the process, Bezos aims to transform Amazon into a kind of 21st century digital utility...
+
+...Just as Microsoft ruled the PC world (and its profits) with Windows software, so Google and Microsoft want to build what techies call the "platform" for the Web--the powerful layer of basic services on top of which everyone else builds their Web sites. "Amazon's a pretty serious dark horse" in that race, says Internet visionary Tim O'Reilly...</blockquote>
+
+With all of this talk about <a href="http://www.valleywag.com/tech/jeff-bezos/earth-to-bezos-start-another-company-212295.php">Bezos needing to start a new company</a>, one has to wonder if he simply thought it better to combine Amazon.com with his own "new" company - Bezos Expeditions.
+
+<blockquote>Amazon is starting to rent out just about everything it uses to run its own business, from rack space in its 10 million square feet of warehouses worldwide to spare computing capacity on its thousands of servers, data storage on its disk drives, and even some of the millions of lines of software code it has written to coordinate all that.</blockquote>
+
+Imagine that. That sounds to me like the "wisdom of a very special entrepreneur who's been through what we're going through" -  somebody who has gone through tremendous growth and survived. Amazon.com was not built with a built-to-flip mentality.
+
+I also found this bit about Amazon.com's small development teams interesting:
+
+<blockquote>...Small, fast-moving groups of five to eight Amazon employees now could go hog wild with new ideas, such as customer discussion boards on each product page and software to play music and videos on the site. Since then these "two-pizza teams," which Bezos calls them because each team can be fed with two large pies, have become Amazon's prime innovation engines. "There's a huge value in this small, nimble team approach," says tech consultant and author John Hagel III. "But you can't do that without this kind of computer architecture."</blockquote>
+
+There's something fishy going on here for sure... It's almost like 37signals started giving the <a href="https://gettingreal.37signals.com/">Getting Real</a> book out for free!
+
+<h3>37signals</h3>
+
+<img style="float:right;margin-left:20px;margin-bottom:20px" src="http://s3.amazonaws.com/almosteffortless/37slogo-trans.gif" alt="37signals" />
+
+As many times as we've heard that <a href="http://www.loudthinking.com/arc/000479.html">there's nothing interesting about how Ruby on Rails scales</a>, everyone knows that it's not the easiest thing in the world. I don't know about anybody else out there, but this doesn't exactly sound like a cakewalk to me:
+
+<blockquote>Take state out of the application servers and push it to database/memcached/shared network drive (that's the whole Shared Nothing thang). Use load balancers between your tiers, so you have load balancers -> web servers -> load balancers -> app servers -> load balancers -> database/memcached/shared network drive servers. (Past the entry point, load balancers can just be software, like haproxy).</blockquote>
+
+I agree, most people would <a href="http://www.loudthinking.com/arc/000597.html">trade CPU cycles for developer productivity and sanity</a>, but application deployment will always be something that developers in small shops need to deal with. Plus, while 37signals doesn't think scaling web applications is all that interesting - maybe Bezos does. 
+
+Think about it this way - as development with Ruby and Rails becomes more and more popular, there's an opportunity here for a major player to step in and <a href="http://www.readwriteweb.com/archives/amazon_webos.php">build a deployment platform</a> that makes it easier and cheaper to scale. Something like <a href="http://www.amazon.com/gp/browse.html?node=16427261">Amazon's s3</a> would work for the small guys, but the large guys (read enterprise) might be able to trust it, too.
+
+<h3>Le Denouement (<a href="http://dictionary.reference.com/search?r=2&amp;q=denouement">?</a>)</h3>
+
+<img style="float:right;margin-left:20px;margin-bottom:20px" src="http://s3.amazonaws.com/almosteffortless/holmes.jpg" alt="shelock-holmes" />
+
+Sure, this is nothing but conjecture - but something is <i>definitely</i> up with Jeff Bezos and 37signals. Why else would Bezos be investing? Why else would 37signals take the investment? There's more here than meets the eye.
+
+If nothing else, I wouldn't be surprised if we start hearing a lot more about Amazon's Web Services from 37signals and the Ruby on Rails community at large. 
+
+In fact, there are already tools that make it easier to use Amazon's s3 service with Rails - just ask <a href="http://blog.pairwise.com/2006/08/28/a-simple-amazon-php-s3-class/">Pairwise</a>, a recent <a href="http://ycombinator.com/">Y Combinator</a> funded startup:
+
+<blockquote>It was short work getting s3 running on likebetter.com, which is written on ruby on rails. We wanted to switch over morehotter.com to s3 as well, but for whatever reason php support for s3 is pretty slim at the moment.</blockquote>
+
+Things that make you go <b>hmm</b>...
+
+<h3>Updates</h3>
+
+37signals links to the Business Week article <a href="http://www.37signals.com/svn/posts/101-sunspots-the-crockett-and-tubbs-edition">here</a>. Interesting which section of the article they chose to quote.
+
+37signals <a href="http://www.37signals.com/svn/posts/138-amazon-goes-unspun-with-ruby-on-rails">announces</a> a new Rails app running on Amazon.com, and then summarily dismisses my wild conjecture in the comments :)
+
+<blockquote>Scott Meade: If the Almost Effortless scenario is correct, what happens with TextDrive? Or is that rumor/idea completely off base?
+
+DHH: Scott, I should have layered it on a bit thicker. Yes, it's completely off base :).</blockquote>
+
+Ah! C'est la vie!
+
+37signals <a href="http://everything.basecamphq.com/archives/000526.php">announces</a> moving all Basecamp files to Amazon's S3 service:
+
+<blockquote>Begin the S3 storage implementation and migrate over 1 terabyte of files to the new servers</blockquote>
+
+I'm not sure how I missed <a href="http://www.infoq.com/news/2006/11/marcel-molina-s3-37signals">this article</a> published all the way back on Nov 29th:
+
+<blockquote>Yesterday, Marcel Molina Jr. of 37signals (and member of the Rails core-team) announced the initial release of AWS::S3, a ruby library for Amazon's Simple Store Service's (S3) REST API.</blockquote>
+
+Basecamp <a href="http://everything.basecamphq.com/archives/000530.php">storage increases</a> thanks to S3, <a href="http://www.basecamphq.com/forum/viewtopic.php?id=2753">as promised</a> on the forums a while back.
+
+<blockquote>The Personal plan doubles to 200 MB, the Basic plan doubles to 400 MB, the Plus plan doubles to 1 GB, the Premium plan triples to 3 GB, and the Max plan quadruples to 20 GB.</blockquote>
+
+<a href="http://weblog.rubyonrails.org/2007/5/22/rails-contrib-and-rubyonrails-stacks">DHH starts</a> a new <a href="http://groups.google.com/group/rubyonrails-stack">google group</a> about Rails deployment stacks:
+
+<blockquote>rubyonrails-stacks is a new forum to discuss how we can get standardized set of images going for Rails that can be deployed on any Xen host or even EC2.</blockquote>
+
+Paul Dowman releases a <a href="http://pauldowman.com/projects/ruby-on-rails-ec2/">virtual appliance for EC2</a>:
+
+<blockquote>This is my attempt to create a public server image for Amazon's EC2 hosting service that's ready to run a standard Ruby on Rails application with little or no customization. Basically it's a Ruby on Rails virtual appliance.</blockquote>

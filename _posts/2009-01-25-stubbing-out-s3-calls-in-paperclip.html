@@ -1,0 +1,22 @@
+---
+layout: post
+title: Stubbing out S3 calls in Paperclip
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+Here's a quick tip for people using <a href="http://www.thoughtbot.com/projects/paperclip">Paperclip</a> that I mentioned on the <a href="http://groups.google.com/group/paperclip-plugin/browse_thread/thread/37ded2f99fc266f9">Google Group</a>. You can easily stub out calls to S3 in your tests using <a href="http://mocha.rubyforge.org">mocha</a> like so:
+
+<pre lang="ruby">
+Photo.any_instance.stubs(:save_attached_files).returns(true)
+Photo.any_instance.stubs(:destroy_attached_files).returns(true)
+</pre>
+
+Of course, you'd want to change the <i>Photo</i> bit depending on the model you have using Paperclip. 
+
+Hopefully this little tip will save others the fruitless Googling and annoying code digging I did :)
+

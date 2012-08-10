@@ -1,0 +1,33 @@
+---
+layout: post
+title: Redirect old URLs in Rails
+tags:
+- General
+status: publish
+type: post
+published: true
+meta: {}
+---
+I'm in the process of porting over a PHP site to Rails, but I don't want to break any old links. The way things work now, the URL to view a particular topic would be something along these lines:
+
+<pre>http://example.com/view.php?id=1</pre>
+
+I'd like these to redirect the user to the appropriate topic, and I'll be maintaining the <i>id</i> value when moving everything over to the new database. So, it turns out that catching all of these PHP-style links and forwarding them over to the new system is pretty easy.
+
+I started by adding a <i>catchall</i> bit in my <b>routes.rb</b> like so:
+
+<pre lang="ruby">map.catch_all "*path", :controller => "topics",  :action => "unknown_request"</pre>
+
+Then, I threw together an <i>unknown_request</i> action in my <b>topics_controller.rb</b>:
+
+<pre lang="ruby">def unknown_request
+  if request.request_uri.include?('view.php')
+    redirect_to topic_path(:id => params[:id])
+  else
+    redirect_to topics_path # or some other path
+  end
+end</pre>
+
+Easy as pie! Plus, I can add <i>elsif</i> statements ad nauseam if I need to catch other deprecated URLs.
+
+Hope this helps somebody save some time out there on the Internets. I found a <a href="http://forum.textdrive.com/viewtopic.php?pid=97072">couple</a> <a href="http://www.fivesevensix.com/posts/2005/04/18/taking-care-of-old-links">other</a> posts about this, but this technique seems pretty straightforward. Feel free to comment if you know of a better way!

@@ -1,0 +1,21 @@
+---
+layout: post
+title: Rails 3 and assert_emails
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _wp_old_slug: ''
+  _edit_last: '1'
+---
+While upgrading an app to Rails 3... I ran across a problem because they've removed the <i>assert_emails</i> method. 
+
+The error, for you Googlers out there:
+
+NoMethodError: undefined method assert_emails
+
+Fixing the problem is simple:
+
+<script src="http://gist.github.com/591040.js?file=gistfile1.rb"></script>

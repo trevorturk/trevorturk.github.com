@@ -1,0 +1,55 @@
+---
+layout: post
+title: Creating Valid Records with Populator and Faker
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+I'm an avid <a href="http://railscasts.com">Railscasts</a> watcher, and I was quite happy with one of the recent episodes called <a href="http://railscasts.com/episodes/126-populating-a-database">Populating a Database</a>. The episode shows you how to load a database with lots of records for demos, design, and/or acceptance testing in an efficient way, but it doesn't cover making sure you're creating valid stuff. I love speedy rake tasks just as much as the next guy, but I found that creating invalid records lead to problems pretty quickly. Luckily, this is something that's very easily fixed.
+
+Here's an example <i>populate</i> task. It's pretty self explanatory, so I won't go into much detail. The highlight is the <i>random(model)</i> bit, which allows you to grab a valid object of any kind. In this case, I use this to pull a random <i>User</i> that creates a valid <i>Post</i>. Note how you can still use the cool stuff in Faker and Populator without following the same technique as described in the Railscasts episode. 
+
+<pre lang="ruby">
+# lib/tasks/populate.rake
+namespace :db do
+  task :populate => :environment do
+    require 'populator' # http://populator.rubyforge.org/
+    require 'faker' # http://faker.rubyforge.org/rdoc/
+    
+    [User, Post].each(&:delete_all)
+    Rake::Task['db:fixtures:load'].invoke
+    
+    def random(model)
+      ids = ActiveRecord::Base.connection.select_all("SELECT id FROM #{model.to_s.tableize}")
+      model.find(ids[rand(ids.length)]["id"].to_i) unless ids.blank?
+    end
+    
+    puts 'creating users...'
+    10.times { |i| 
+      User.create(:login => Faker::Lorem.words(1).to_s, :email => Faker::Internet.email, :password => 'monkey')
+    }
+
+    puts 'creating posts...'
+    40.times { |i| 
+      random(User).posts.create(:body => Faker::Lorem.words, :created_at => Populator.value_in_range(10.years.ago..Time.now).to_s)
+    }    
+    
+  end
+end
+</pre> 
+
+Of course there are other ways to achieve this <i>random(model)</i> business without quite as much overhead. For example, you could load all of the users with one query and then choose a random one like this:
+
+<pre lang="ruby">
+@users = User.all
+
+40.times { |i| 
+  @users.rand.posts.create(:body => Faker::Lorem.words, :body => Populator.value_in_range(10.years.ago..Time.now).to_s)
+}
+</pre>
+
+But I'm not a big believer in premature or unnecessary optimization. In any case, long running Rake tasks make a good excuse to take a walk while it's still nice outside here in Chicago :)

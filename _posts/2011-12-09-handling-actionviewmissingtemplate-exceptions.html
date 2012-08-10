@@ -1,0 +1,26 @@
+---
+layout: post
+title: Handling ActionView::MissingTemplate exceptions
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+Perhaps you've been receiving annoying emails about exceptions like this in your Rails apps:
+
+<pre><code>A ActionView::MissingTemplate occurred in posts#destroy:
+
+Missing template posts/destroy with {:formats=>[:html], :locale=>[:en, :en], :handlers=>[:rjs, :rhtml, :rxml, :erb, :builder]} in view paths...</code></pre>
+
+This exception is raised when you're missing the template for responding to a request of a certain format. So, if the browser requested HTML and you only expected to receive JS, you might simply modify your controller action like so:
+
+<pre><code>respond_to do |format|
+  format.js
+end</code></pre>
+
+This specifies that you're only going to respond to JS requests, and any others will be served a 406 "not_acceptable" response, which will quiet down that exception noise. 
+
+Have you handled these in some other way? If so, please let me know!

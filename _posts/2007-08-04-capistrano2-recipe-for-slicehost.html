@@ -1,0 +1,114 @@
+---
+layout: post
+title: Capistrano2 Recipe for Slicehost
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+After moving from <a href="http://dreamhost.com">DreamHost</a> over to <a href="http://mediatemple.net">Media Temple</a> a few months ago, I ran into some issues with the <a href="http://www.mediatemple.net/webhosting/gs/">Rails Containers</a> and have since moved on to <a href="http://slicehost.com">Slicehost</a>. I'm extremely happy over there, and I'd recommend them to anyone not afraid of the command line. 
+
+Since my <a href="http://almosteffortless.com/2007/01/28/capistrano-on-media-temple/">Capistrano Recipe for Media Temple</a> still gets a fair amount of traffic, I figured I might as well share my new <a href="http://www.capify.org/">Capistrano 2</a> Recipe for Slicehost - specifically <a href="http://www.debian.org/">Debian</a> Etch. 
+
+<pre lang="ruby">set :application, "eldorado"
+set :repository,  "http://eldorado.googlecode.com/svn/trunk/"
+set :deploy_to, "/home/eldorado"
+set :deploy_via, :export
+set :user, 'root'
+
+ssh_options[:port] = 22
+
+role :app, "000.00.00.000"
+role :web, "000.00.00.000"
+role :db,  "000.00.00.000", :primary => true
+
+after 'deploy:update_code', 'deploy:upload_database_yml'
+after 'deploy:update_code', 'deploy:create_symlinks'
+
+namespace :deploy do
+  task :restart do
+    run "/var/lib/gems/1.8/bin/mongrel_rails stop -P #{shared_path}/log/mongrel.8000.pid"
+    run "/var/lib/gems/1.8/bin/mongrel_rails start -d -e production -p 8000 -P log/mongrel.8000.pid -c #{release_path}"
+  end
+end
+
+namespace :deploy do
+  task :upload_database_yml do
+    put(File.read('config/database.yml'), "#{release_path}/config/database.yml", :mode => 0444)    
+  end
+end
+
+namespace :deploy do
+  task :create_symlinks do
+    %w{avatars files headers}.each do |share|
+      run "rm -rf #{release_path}/public/#{share}"
+      run "mkdir -p #{shared_path}/system/#{share}"
+      run "ln -nfs #{shared_path}/system/#{share} #{release_path}/public/#{share}"
+    end
+  end
+end</pre>
+
+While we're at it, here's the accompanying <a href="http://www.apache.org/">Apache</a> config:
+
+<pre>ServerName 127.0.0.1
+NameVirtualHost *:80
+
+<virtualhost *:80>
+
+	ServerName example.com
+	ServerAlias www.example.com
+	DocumentRoot /var/www/eldorado
+
+	<directory "/var/www/eldorado">
+		Options FollowSymLinks
+		AllowOverride None
+		Order allow,deny
+		Allow from all
+	</directory>
+
+	RewriteEngine On
+
+	<proxy balancer://mongrel_cluster>
+		BalancerMember http://127.0.0.1:8000
+	</proxy>
+
+	<proxy *>
+		Order deny,allow
+		Allow from .example.com
+	</proxy>
+
+	# Check for maintenance file and redirect all requests
+	RewriteCond %{DOCUMENT_ROOT}/system/maintenance.html -f
+	RewriteCond %{SCRIPT_FILENAME} !maintenance.html
+	RewriteRule ^.*$ /system/maintenance.html [L]
+
+	# Rewrite index to check for static
+	RewriteRule ^/$ /index.html [QSA] 
+
+	# Rewrite to check for Rails cached page
+	RewriteRule ^([^.]+)$ $1.html [QSA]
+
+	# Redirect all non-static requests to cluster
+	RewriteCond %{DOCUMENT_ROOT}/%{REQUEST_FILENAME} !-f
+	RewriteRule ^/(.*)$ balancer://mongrel_cluster%{REQUEST_URI} [P,QSA,L]
+
+	ErrorLog /home/eldorado/shared/log/error_log
+	CustomLog /home/eldorado/shared/log/access_log combined
+
+	RewriteLog /home/eldorado/shared/log/rewrite_log
+	RewriteLogLevel 9
+
+</virtualhost></pre>
+
+Of course, this would require creating a symlink in /var/www/example to your installation's "current" directory, as set up by Capistrano:
+
+<pre>ln -s /home/eldorado/current/public /var/www/example</pre>
+
+This work was done on behalf of <a href="http://almosteffortless.com/eldorado/">El Dorado</a>, an open-source Rails forum I've been hacking away at for the last few months. I'll post more about that soon, but you can start playing with the beta version now. 
+
+There's also a live version of the app, which is (hopefully) up and running over at <a href="http://newathens.org">NewAthens.org</a>. NewAthens was formerly running on a hodgepodge of <a href="http://punbb.org">PunBB</a>, <a href="http://wordpress.org">WordPress</a>, <a href="http://www.pmwiki.org/">PmWiki</a>, <a href="http://www.proxy2.de/scripts.php">Advanced Poll</a>, and <a href="http://coppermine-gallery.net/">Coppermine</a>. El Dorado represents the beginning of my attempt to create a full stack community site in <a href="http://rubyonrails.org">Rails</a>. 
+
+The existing database from the PunBB forum was successfully imported on Saturday using some handy Rake tasks I created, as were all of the user-uploaded files, etc. The resulting database has around 35,000 rows, and it's been up and running without any major problems for a week now. <a href="http://en.wikipedia.org/wiki/Huzzah">Huzzah!</a>

@@ -1,0 +1,37 @@
+---
+layout: post
+title: Raising Protected Attribute Assignment Errors
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+While mass-assignment in Rails can be convenient for developers, it can pose a security risk if the implications aren't understood. An <a href="http://railspikes.com/2008/9/22/is-your-rails-application-safe-from-mass-assignment">article on Rails Spikes</a> does a good job of explaining the issue:
+
+<blockquote>By default ActiveRecord allows visitors access to any writer method, that is, any method ending with an equal sign. This comes courtesy of the ActiveRecord::Base#attributes= method, which is used internally by the main methods that handle creating and updating records, including new(), create(), and update_attributes().
+
+The way most applications are designed means that whatever data a visitor sends to the server will likely find its way through the attributes=() method, and if not protected, ActiveRecord will happily update the records based on what was sent. In less technical terms: <i>ActiveRecord is insecure by default</i>.</blockquote>
+
+I suggest reading over that article, even if you're familiar with the potential issues around mass-assignment. There's also <a href="http://railscasts.com/episodes/26">a Railscasts episode</a> on the subject. 
+
+The solution proposed is to use <i><a href="http://api.rubyonrails.org/classes/ActiveRecord/Base.html#M001981">attr_accessible</a></i> in all of your models. This way, you have to explicitly make attributes accessible to users, which is generally a good thing. However, this strategy introduces a small "gotcha" that's bitten me a few times. 
+
+When you're in development and try to mass-assign a protected attribute, it will fail silently, leaving only a note in the debug log. I don't know about you, but I very rarely look at the debug log, and I've found myself temporarily stumped when attributes weren't being assigned as expected. Of course, I'm getting better about remembering to add attributes via attr_accessible after being bitten by this one a few times, but perhaps others have been confounded by this gotcha as well?
+
+Well, thanks to <a href="http://github.com/rails/rails/commit/81c12d1f6359eb5e52b376f1f3552097a144cc8b">a small change in Active Record</a> (more detail <a href=http://groups.google.com/group/rubyonrails-core/browse_thread/thread/32ceef53fe86195c/">here</a>), it's now possible to give yourself a more noticeable warning when your testing your application. Simply add the following initializer, and your tests will complain much more loudly if you try to mass-assign a protected attribute.
+
+<pre lang="ruby">
+# config/initializers/noisy_protected_attribute_removal.rb
+if Rails.env.test?
+  ActiveRecord::Base.class_eval do
+    def log_protected_attribute_removal(*attributes)
+      raise "Can't mass-assign these protected attributes: #{attributes.join(', ')}"
+    end
+  end
+end
+</pre>
+
+This little trick has saved me some head-scratching already. Perhaps you'll find it useful as well.

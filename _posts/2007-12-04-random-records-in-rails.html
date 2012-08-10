@@ -1,0 +1,53 @@
+---
+layout: post
+title: Random Records in Rails
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+There are a number of different ways to retrieve random items from a database in Rails, most of which have been discussed at length on the Rails wiki. According to <a href="http://wiki.rubyonrails.org/rails/pages/HowtoSelectRandomRecords">this article</a>, there are 3 preferred methods:
+
+<ol>
+<li>Select a Record by Random Offset</li>
+<li>Randomize with the Database</li>
+<li>Randomize with Ruby</li>
+</ol>
+
+For an in-depth look into these options, you can peruse <a href="http://wiki.rubyonrails.org/rails/pages/RandomAccessRecordsDiscussion">this discussion page</a>, which details some of the pros and cons of different strategies for randomization.
+
+After trying out a few of the techniques that abound in this area, I stumbled across <a href="http://weblog.jamisbuck.org/2006/10/7/helping-activerecord-finders-help-you">an article from Jamis Buck</a>, where he discusses a <a href="http://ryandaigle.com/articles/2006/08/01/whats-new-in-edge-rails-simply-restful-support-and-how-to-use-it">RESTful</a> way to approach the creation of custom finders. Although randomization isn't the focus of the article, he does provide a bit of guidance in that regard. His strategy uses Ruby for the randomization, and employs 2 light-weight queries. The first query gathers a list of valid ids. The second simply selects a single item using that (randomized) id.
+
+So, I did a bit of <a href="http://weblog.jamisbuck.org/2008/1/7/never-ever-cargo-cult">cargo-culting</a> and repurposing to achieve an efficient, database agnostic way to retrieve random items from a database using <a href="http://api.rubyonrails.com/classes/ActiveRecord/Base.html">ActiveRecord</a>. Simply add the following to the model from which you'd like to be able to pull random records:
+
+<pre lang="ruby">class Widget < ActiveRecord::Base
+  
+  # ...
+  
+  def self.random
+    ids = connection.select_all("SELECT id FROM widgets")
+    find(ids[rand(ids.length)]["id"].to_i) unless ids.blank?
+  end
+  
+end</pre>
+
+Then, you can use the following bit of code in a controller like so:
+
+<pre lang="ruby">class SomeController < ApplicationController
+  
+  # ...
+
+  def some_action
+    @widget = Widget.random
+  end
+
+end</pre>
+
+And you've got a small and efficient "random finder" for use throughout your app. Lovely.
+
+<b>Update</b> I just came across <a href="https://rails.lighthouseapp.com/projects/8994/tickets/1274-patch-add-support-for-order-random-in-queries#ticket-1274-11">a comment from Rails Core member Koz</a> that provides an alternative that seems compelling at fist glance:
+
+<script src="http://gist.github.com/358505.js?file=gistfile1.ru"></script>

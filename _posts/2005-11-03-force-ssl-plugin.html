@@ -1,0 +1,30 @@
+---
+layout: post
+title: Force SSL Plugin
+tags:
+- General
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+<p>We're rather pleased to announce our second plugin for the famed Wordpress <i>semantic publishing system</i>. It's called <b>Force SSL</b>, and it's a handy little thing. For those will an SSL certificate, this plugin forces an HTTPS connection for security purposes.</p>
+
+<p><a href="http://almosteffortless.com/wordpress/force-ssl/">Click here for the plugin &raquo;</a></p>
+
+<p>Perhaps you're interested in the PHP scripting technique that makes all of this possible? Maybe you don't feel like taking a look at the source code, and you'd like a little help right quick?</p>
+
+<!--more-->
+
+<p><i>Force SSL</i> simply redirects requests made via regular old <b>http</b> to requests for trusty new <b>https</b>, and that's about it. Here's the PHP code that makes this possible, with some small changes to allow it to run from outside of Wordpress:</p>
+
+<pre>
+if($_SERVER["HTTPS"] != "on") {
+	$newurl = "https://" . $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"];
+	header("Location: $newurl");
+	exit();
+}
+</pre>
+
+<p>One could, if one wanted, place this snippet in their header and find that a user wouldn't be able to, say, remove the <b>s</b> from their browser address. That would mean that your content would only be available via an SSL connection - provided that you actually <i>have</i> an SSL certificate and whatnot.</p>
