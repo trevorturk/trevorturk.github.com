@@ -10,7 +10,7 @@ class Post
       puts "[WARN] File exists - skipping create"
     else
       File.open(path, "w") do |file|
-        file.puts YAML.dump({'layout' => 'post', 'published' => false, 'title' => title})
+        file.puts YAML.dump({'layout' => 'post', 'layout' => 'type', 'published' => false, 'title' => title})
         file.puts "---"
         file.puts content if content
       end
