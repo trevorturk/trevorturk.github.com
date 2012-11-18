@@ -1,3 +1,9 @@
+require 'net/http'
+
+task :ping do
+  Net::HTTP.get_response(URI.parse('http://trevorturk.com'))
+end
+
 require 'json'
 require 'rest-client'
 require 'yaml'
