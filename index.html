@@ -11,15 +11,54 @@
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    <style type="text/css">
+      span.cursor {
+        -webkit-animation: blink 1s linear 0s infinite;
+        -moz-animation: blink 1s linear 0s infinite;
+        -ms-animation: blink 1s linear 0s infinite;
+        -o-animation: blink 1s linear 0s infinite;
+      }
+      @-webkit-keyframes blink {
+        0%   { color: #fff }
+        47%  { color: #fff }
+        50%  { color: #222 }
+        97%  { color: #222 }
+        100% { color: #222 }
+      }
+
+      @-moz-keyframes blink {
+        0%   { color: #fff }
+        47%  { color: #fff }
+        50%  { color: #222 }
+        97%  { color: #222 }
+        100% { color: #222 }
+      }
+
+      @-ms-keyframes blink {
+        0%   { color: #fff }
+        47%  { color: #fff }
+        50%  { color: #222 }
+        97%  { color: #222 }
+        100% { color: #222 }
+      }
+
+      @-o-keyframes blink {
+        0%   { color: #fff }
+        47%  { color: #fff }
+        50%  { color: #222 }
+        97%  { color: #222 }
+        100% { color: #222 }
+      }
+    </style>
   </head>
   <body>
     <div class="wrapper">
       <header>
         <h1>
-          <a class="fa fa-twitter-square fa-md" style="color:#777; margin-right:4px;" href="https://twitter.com/trevorturk"></a>
-          <a class="fa fa-instagram fa-md" style="color:#777; margin-right:4px;" href="https://instagram.com/trevorturk"></a>
-          <a class="fa fa-github-square fa-md" style="color:#777; margin-right:4px;" href="https://github.com/trevorturk"></a>
-          <span style="color:#eee;margin:0 2px;">|</span>
+          <a class="fa fa-twitter-square fa-md" style="color:#222; margin-right:4px;" href="https://twitter.com/trevorturk"></a>
+          <a class="fa fa-instagram fa-md" style="color:#222; margin-right:4px;" href="https://instagram.com/trevorturk"></a>
+          <a class="fa fa-github-square fa-md" style="color:#222; margin-right:4px;" href="https://github.com/trevorturk"></a>
+          <span class="cursor">|</span>
           Trevor Turk
         </h1>
       </header>
